@@ -4,6 +4,14 @@
   *{
     font-family: 'Asap Condensed', arial;
     scroll-behavior: smooth;
+    -webkit-user-select: none;
+    -moz-user-select:    none;
+    -ms-user-select:     none;
+    user-select:         none;
+  }
+
+  @media print {
+    body { display: none !important; }
   }
 
   body {
