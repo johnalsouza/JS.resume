@@ -176,6 +176,42 @@ document.addEventListener('contextmenu', function (e) { e.preventDefault(); });
 document.addEventListener('dragstart',   function (e) { e.preventDefault(); });
 
 /* ============================================================
+   Content Protection — selection, copy, cut, print
+   selectstart: blocks text selection on desktop.
+   copy/cut:    clears clipboard and cancels the event so no
+                text escapes even if selection somehow occurs.
+   keydown:     blocks Ctrl/Cmd+U (view-source), Ctrl/Cmd+S
+                (save page), Ctrl/Cmd+P (print).
+   beforeprint: fires when the user triggers print via browser
+                menu; replaces body content with a warning so
+                the printed/PDF output is blank.
+   ============================================================ */
+document.addEventListener('selectstart', function (e) { e.preventDefault(); });
+
+document.addEventListener('copy', function (e) {
+    e.clipboardData.setData('text/plain', '');
+    e.preventDefault();
+});
+
+document.addEventListener('cut', function (e) {
+    e.clipboardData.setData('text/plain', '');
+    e.preventDefault();
+});
+
+document.addEventListener('keydown', function (e) {
+    var ctrl = e.ctrlKey || e.metaKey;
+    if (ctrl && (e.key === 'u' || e.key === 'U' ||
+                 e.key === 's' || e.key === 'S' ||
+                 e.key === 'p' || e.key === 'P')) {
+        e.preventDefault();
+    }
+});
+
+window.addEventListener('beforeprint', function () {
+    document.body.innerHTML = '<h2 style="text-align:center;margin-top:40px">Printing is disabled.</h2>';
+});
+
+/* ============================================================
    DevTools Detection — funny terminal overlay
    Strategy:
      A) setInterval (every 500 ms) — detects docked DevTools by
